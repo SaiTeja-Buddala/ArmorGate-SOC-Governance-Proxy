@@ -1,40 +1,28 @@
 """
-ArmorGate - Audit Logger Module
+ArmorGate — Audit Logger Module
 ================================
 Module: armorgate/audit_logger.py
 
 Description:
     The Audit Logger is the centralized, tamper-evident record of every
-        decision made by the ArmorGate governance proxy. It provides the
-            visibility layer that closes the agentic visibility gap by capturing
-                every action request, policy evaluation, and HITL outcome.
+    decision made by the ArmorGate governance proxy. It provides the
+    visibility layer that closes the agentic visibility gap — ensuring
+    that no autonomous SOC agent action goes unrecorded.
 
-                Responsibilities:
-                    - Persist a structured record for every PolicyDecision emitted by
-                          the Policy Engine (AUTO_APPROVE, HITL_QUEUE, DENY_BLOCK)
-                              - Persist HITL outcomes (Slack APPROVED / REJECTED) with reviewer,
-                                    timestamp, and justification
-                                        - Persist Deny+Block events triggered by rejected HITL approvals
-                                            - Provide a feedback channel to the Policy Store for adaptive
-                                                  policy refinement based on historical decisions
-                                                      - Expose query interfaces for compliance reporting and incident
-                                                            review (read-only)
+    Responsibilities:
+        - Record every Action Request received from SOC agents.
+        - Record the Policy Engine’s decision (auto_approve / hitl_queue /
+          deny_block) along with the matched policy ID and rationale.
+        - Record HITL approval outcomes (approver identity, decision, latency).
+        - Persist logs to a durable backend (SQLite for dev, PostgreSQL for
+          production deployments).
+        - Provide read APIs for adaptive policy refinement: aggregated
+          decision telemetry feeds back to the Policy Store to inform
+          future policy tuning.
+        - Expose query interfaces for compliance reporting and incident review.
 
-                                                            Schema (planned):
-                                                                - event_id (UUID)
-                                                                    - timestamp (ISO 8601 UTC)
-                                                                        - agent_id, action_type, target_resource
-                                                                            - policy_decision (AUTO_APPROVE | HITL_QUEUE | DENY_BLOCK)
-                                                                                - hitl_outcome (APPROVED | REJECTED | N/A)
-                                                                                    - reviewer (Slack user ID, if HITL)
-                                                                                        - matched_policy_ids
-                                                                                            - raw_request_payload (redacted)
+Status: placeholder — implementation pending.
+Planned schema: append-only event log with hash-chained integrity check.
+"""
 
-                                                                                            Backend:
-                                                                                                SQLite for local dev; PostgreSQL for production deployments.
-
-                                                                                                Status:
-                                                                                                    Placeholder - implementation in progress.
-                                                                                                    """
-
-# TODO: Implement AuditLogger class, persistence layer, and query API
+# TODO: Implement AuditLogger, EventSchema, and feedback aggregator.
