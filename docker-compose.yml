@@ -2,6 +2,11 @@
 # ArmorGate — Agentic SOC Governance Proxy
 # Placeholder Docker Compose configuration with service stubs.
 # Status: planned — service definitions and images to be finalized.
+#
+# Secrets policy: NEVER commit literal credentials. All sensitive values must
+# be supplied at runtime via environment variables sourced from a local .env
+# file (which is excluded by .gitignore) or a secret manager (Vault, AWS
+# Secrets Manager, Doppler, etc.) in production deployments.
 
 version: "3.9"
 
@@ -14,19 +19,22 @@ services:
     # ports:
     #   - "8080:8080"
     # environment:
-    #   - POLICY_STORE_URL=postgresql://armorgate:armorgate@database:5432/armorgate
+    #   - POLICY_STORE_URL=${POLICY_STORE_URL}
     # depends_on:
     #   - database
     #   - slack-handler
+    # user: "10001:10001"        # run as non-root
+    # read_only: true            # immutable container filesystem
+    # cap_drop: [ALL]            # drop all Linux capabilities
     restart: unless-stopped
 
   # Audit log + policy store backend (PostgreSQL planned, SQLite for dev).
   database:
     # image: postgres:16-alpine
     # environment:
-    #   - POSTGRES_USER=armorgate
-    #   - POSTGRES_PASSWORD=armorgate
-    #   - POSTGRES_DB=armorgate
+    #   - POSTGRES_USER=${POSTGRES_USER}
+    #   - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    #   - POSTGRES_DB=${POSTGRES_DB}
     # volumes:
     #   - armorgate_db:/var/lib/postgresql/data
     restart: unless-stopped
@@ -41,6 +49,9 @@ services:
     #   - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
     # depends_on:
     #   - database
+    # user: "10001:10001"
+    # read_only: true
+    # cap_drop: [ALL]
     restart: unless-stopped
 
 # volumes:
