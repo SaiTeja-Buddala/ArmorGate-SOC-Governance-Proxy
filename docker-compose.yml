@@ -1,0 +1,47 @@
+# docker-compose.yml
+# ArmorGate — Agentic SOC Governance Proxy
+# Placeholder Docker Compose configuration with service stubs.
+# Status: planned — service definitions and images to be finalized.
+
+version: "3.9"
+
+services:
+  # ArmorGate proxy engine — FastAPI/Flask service that intercepts
+  # SOC agent action requests and applies deterministic policy checks.
+  proxy:
+    # build: ./armorgate
+    # image: armorgate/proxy-engine:latest
+    # ports:
+    #   - "8080:8080"
+    # environment:
+    #   - POLICY_STORE_URL=postgresql://armorgate:armorgate@database:5432/armorgate
+    # depends_on:
+    #   - database
+    #   - slack-handler
+    restart: unless-stopped
+
+  # Audit log + policy store backend (PostgreSQL planned, SQLite for dev).
+  database:
+    # image: postgres:16-alpine
+    # environment:
+    #   - POSTGRES_USER=armorgate
+    #   - POSTGRES_PASSWORD=armorgate
+    #   - POSTGRES_DB=armorgate
+    # volumes:
+    #   - armorgate_db:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Slack HITL handler — manages approval workflow for medium-risk
+  # actions routed to the HITL queue.
+  slack-handler:
+    # build: ./armorgate
+    # command: python -m armorgate.hitl_handler
+    # environment:
+    #   - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+    #   - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+    # depends_on:
+    #   - database
+    restart: unless-stopped
+
+# volumes:
+#   armorgate_db:
