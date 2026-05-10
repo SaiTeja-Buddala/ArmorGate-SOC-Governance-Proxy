@@ -1,36 +1,26 @@
 """
-ArmorGate - Policy Store Module
-================================
+ArmorGate — Policy Store Interface
+===================================
 Module: armorgate/policy_store.py
 
 Description:
-    The Policy Store is the authoritative source of deterministic
-        security policies that ArmorGate enforces against autonomous SOC
-            agent traffic. It backs the Policy Engine and exposes a bidirectional
-                interface: policies feed into evaluation, and feedback from the
-                    Audit Log feeds back for adaptive refinement.
+    The Policy Store is the authoritative source of deterministic security
+    policies enforced by the ArmorGate Policy Engine. It is bidirectional:
+    policies are loaded from the store for enforcement, and aggregated
+    audit-log feedback is written back to support adaptive policy refinement.
 
-                    Responsibilities:
-                        - Load policy definitions from config/policies.yaml (or JSON)
-                            - Provide a typed, in-memory representation of active policies
-                                - Support hot-reload / policy update triggers without restarting
-                                      the proxy engine
-                                          - Map each policy to one of three decision classes:
-                                                  * AUTO_APPROVE
-                                                          * HITL_QUEUE
-                                                                  * DENY_BLOCK
-                                                                      - Accept adaptive-learning signals from the Audit Logger to flag
-                                                                            candidate policy updates (human-reviewed before activation)
-                                                                                - Version every policy change for traceability
+    Responsibilities:
+        - Load policy definitions from YAML/JSON config or a database backend.
+        - Hot-reload policies when configuration changes (no proxy restart).
+        - Validate policy schemas at load time (fail fast on malformed rules).
+        - Expose a query API for the Policy Engine to look up applicable
+          policies by action_type, resource pattern, and risk level.
+        - Accept feedback signals from the Audit Logger (e.g., approval rates,
+          false-positive deny counts) to support adaptive policy learning.
+        - Maintain version history of policy changes for compliance auditing.
 
-                                                                                Interface (planned):
-                                                                                    - load_policies(path: str) -> List[Policy]
-                                                                                        - get_policy(action_type: str) -> Optional[Policy]
-                                                                                            - refresh()                  -> None
-                                                                                                - record_feedback(event)     -> None
+Status: placeholder — implementation pending.
+Planned backends: YAML file (dev) → PostgreSQL with versioning (production).
+"""
 
-                                                                                                Status:
-                                                                                                    Placeholder - implementation in progress.
-                                                                                                    """
-
-# TODO: Implement PolicyStore class, YAML loader, and feedback channel
+# TODO: Implement PolicyStore, PolicySchema validator, and feedback intake API.
