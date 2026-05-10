@@ -1,0 +1,65 @@
+# =============================================================================
+# ArmorGate - Policy Definitions (Template)
+# File: config/policies.yaml
+#
+# This YAML file defines the deterministic security policies that the
+# ArmorGate Policy Engine evaluates for every Action Request submitted
+# by autonomous SOC agents.
+#
+# Decision classes:
+#   - auto_approve : low-risk, executed immediately
+#   - hitl_queue   : medium-risk, requires Slack human approval
+#   - deny_block   : high-risk, blocked and audited
+#
+# Structure of a policy entry:
+#   - id            : unique policy identifier (string)
+#     name          : human-readable name
+#     description   : what this policy guards against
+#     match:
+#       action_type : the SOC agent action this policy applies to
+#       resource    : optional resource pattern (regex / glob)
+#       risk_level  : low | medium | high
+#     decision      : auto_approve | hitl_queue | deny_block
+#     owasp_llm     : optional reference (e.g. LLM08_excessive_agency)
+#     armor_control : optional ARMOR control reference
+# =============================================================================
+
+version: 0.1.0
+
+policies: []
+
+# -----------------------------------------------------------------------------
+# Example policy entries (commented out - uncomment and edit for real use)
+# -----------------------------------------------------------------------------
+#
+# - id: P-001
+#   name: Read-only enrichment auto-approve
+#   description: Allow SOC agents to enrich alerts from read-only threat intel
+#   match:
+#     action_type: enrich_alert
+#     resource: "ti.*"
+#     risk_level: low
+#   decision: auto_approve
+#   owasp_llm: LLM08_excessive_agency
+#   armor_control: ARMOR-DETECT-02
+#
+# - id: P-010
+#   name: Endpoint isolation requires HITL
+#   description: Quarantining a host must be human-approved via Slack
+#   match:
+#     action_type: isolate_host
+#     risk_level: medium
+#   decision: hitl_queue
+#   owasp_llm: LLM08_excessive_agency
+#   armor_control: ARMOR-RESPOND-04
+#
+# - id: P-099
+#   name: Block production credential rotation by agents
+#   description: Agents must never rotate prod secrets autonomously
+#   match:
+#     action_type: rotate_secret
+#     resource: "prod/*"
+#     risk_level: high
+#   decision: deny_block
+#   owasp_llm: LLM08_excessive_agency
+#   armor_control: ARMOR-PROTECT-07
